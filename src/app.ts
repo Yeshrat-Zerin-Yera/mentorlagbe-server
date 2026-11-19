@@ -5,6 +5,7 @@ import helmet from "helmet";
 import { toNodeHandler } from "better-auth/node";
 import userRoutes from "./routes/user.routes.js";
 import tuitionRoutes from "./routes/tuition.routes.js";
+import applicationRoutes from "./routes/application.routes.js";
 
 export const app = express();
 
@@ -37,6 +38,7 @@ app.use(express.json());
 
 app.use("/api/users", userRoutes);
 app.use("/api/tuitions", tuitionRoutes);
+app.use("/api/applications", applicationRoutes);
 
 app.get("/", (_req, res) => {
   res.status(200).json({
