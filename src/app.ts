@@ -4,8 +4,6 @@ import cors from "cors";
 import helmet from "helmet";
 import { toNodeHandler } from "better-auth/node";
 
-import { auth } from "./config/auth.js";
-
 export const app = express();
 
 app.use(helmet());
@@ -18,8 +16,20 @@ app.use(
   })
 );
 
-// BetterAuth must run before express.json().
-app.all("/api/auth/*splat", toNodeHandler(auth));
+// Reserve the BetterAuth route before express.json().
+let authHandler: ReturnType<typeof toNodeHandler> | null = null;
+
+app.all("/api/auth/*splat", (req, res, next) => {
+  if (!authHandler) {
+    res.status(503).json({
+      success: false,
+      message: "Authentication is temporarily unavailable",
+    });
+    return;
+  }
+
+  return authHandler(req, res);
+});
 
 app.use(express.json());
 
@@ -36,5 +46,10 @@ app.get("/health", (_req, res) => {
     message: "Server is healthy",
   });
 });
+
+export const mountAuth = async () => {
+  const { auth } = await import("./config/auth.js");
+  authHandler = toNodeHandler(auth);
+};
 
 export default app;
