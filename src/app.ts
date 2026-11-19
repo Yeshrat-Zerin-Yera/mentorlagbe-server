@@ -6,6 +6,8 @@ import { toNodeHandler } from "better-auth/node";
 import userRoutes from "./routes/user.routes.js";
 import tuitionRoutes from "./routes/tuition.routes.js";
 import applicationRoutes from "./routes/application.routes.js";
+import paymentRoutes from "./routes/payment.routes.js";
+import { handleStripeWebhook } from "./controllers/payment.controller.js";
 
 export const app = express();
 
@@ -34,11 +36,18 @@ app.all("/api/auth/*splat", (req, res, next) => {
   return authHandler(req, res);
 });
 
+app.post(
+  "/api/payments/webhook",
+  express.raw({ type: "application/json" }),
+  handleStripeWebhook
+);
+
 app.use(express.json());
 
 app.use("/api/users", userRoutes);
 app.use("/api/tuitions", tuitionRoutes);
 app.use("/api/applications", applicationRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.get("/", (_req, res) => {
   res.status(200).json({
