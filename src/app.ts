@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import { toNodeHandler } from "better-auth/node";
+import userRoutes from "./routes/user.routes.js";
 
 export const app = express();
 
@@ -32,6 +33,8 @@ app.all("/api/auth/*splat", (req, res, next) => {
 });
 
 app.use(express.json());
+
+app.use("/api/users", userRoutes);
 
 app.get("/", (_req, res) => {
   res.status(200).json({
