@@ -1,7 +1,11 @@
 
 import dotenv from "dotenv";
+import dns from "node:dns";
 
 dotenv.config();
+
+// Configure DNS only for this Node.js process.
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 const startServer = async () => {
   try {
@@ -9,16 +13,14 @@ const startServer = async () => {
 
     const PORT = Number(process.env.PORT) || 5000;
 
-    // Start Express immediately.
     app.listen(PORT, () => {
       console.log(`MentorLagbe server running on port ${PORT}`);
     });
 
-    // Connect MongoDB after Express has started.
     try {
       const { connectDB } = await import("./config/db.js");
-      await connectDB();
 
+      await connectDB();
       await mountAuth();
 
       console.log("BetterAuth mounted successfully");

@@ -1,10 +1,5 @@
 
-import dns from "node:dns";
 import { MongoClient, Db } from "mongodb";
-
-// Use public DNS for MongoDB Atlas SRV lookups.
-// This changes DNS resolution only inside this Node.js process.
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 const uri = process.env.MONGODB_URI;
 
@@ -12,7 +7,9 @@ if (!uri) {
   throw new Error("MONGODB_URI is missing from environment variables");
 }
 
-export const client = new MongoClient(uri);
+export const client = new MongoClient(uri, {
+  serverSelectionTimeoutMS: 15000,
+});
 
 let db: Db;
 

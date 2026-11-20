@@ -91,7 +91,9 @@ export const verifyToken: RequestHandler = async (
     };
 
     next();
-  } catch {
+  } catch (error) {
+    console.error("JWT verification error:", error);
+
     res.status(401).json({
       success: false,
       message: "Invalid or expired authentication token",
