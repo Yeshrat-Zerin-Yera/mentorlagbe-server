@@ -740,6 +740,7 @@ export const moderateTuition: RequestHandler = async (req, res) => {
 
 // GET /api/tuitions/stats
 // Public: statistics for approved and active tuition posts.
+
 export const getPublicTuitionStats: RequestHandler = async (_req, res) => {
     try {
         const filter: Filter<Document> = {
@@ -748,10 +749,42 @@ export const getPublicTuitionStats: RequestHandler = async (_req, res) => {
         };
 
         const tuitions = getTuitionCollection();
+        const users = getDB().collection("users");
 
-        const [totalTuitions, subjects] = await Promise.all([
+        const [
+            totalTuitions,
+            subjects,
+            popularSubjects,
+            totalStudents,
+            totalTutors,
+        ] = await Promise.all([
             tuitions.countDocuments(filter),
+
             tuitions.distinct("subject", filter),
+
+            tuitions.aggregate([
+                {
+                    $match: {
+                        ...filter,
+                        subject: {
+                            $type: "string",
+                            $ne: "",
+                        },
+                    },
+                },
+                {
+                    $group: {
+                        _id: "$subject",
+                        count: { $sum: 1 },
+                    },
+                },
+                { $sort: { count: -1, _id: 1 } },
+                { $limit: 6 },
+            ]).toArray(),
+
+            users.countDocuments({ role: "student" }),
+
+            users.countDocuments({ role: "tutor" }),
         ]);
 
         res.status(200).json({
@@ -760,8 +793,15 @@ export const getPublicTuitionStats: RequestHandler = async (_req, res) => {
                 totalTuitions,
                 totalSubjects: subjects.filter(
                     (subject) =>
-                        typeof subject === "string" && subject.trim() !== ""
+                        typeof subject === "string" &&
+                        subject.trim() !== ""
                 ).length,
+                totalStudents,
+                totalTutors,
+                popularSubjects: popularSubjects.map((item) => ({
+                    name: item._id,
+                    count: item.count,
+                })),
             },
         });
     } catch (error) {
@@ -773,3 +813,7 @@ export const getPublicTuitionStats: RequestHandler = async (_req, res) => {
         });
     }
 };
+
+
+
+
