@@ -131,6 +131,7 @@ export const createApplication: RequestHandler = async (req, res) => {
             subject: tuition.subject,
             monthlyFee: tuition.monthlyFee,
             tutorEmail: tuition.tutorEmail,
+            tutorName: tuition.tutorName || "",
 
             studentName: student.name || "",
             studentEmail: authUser.email,

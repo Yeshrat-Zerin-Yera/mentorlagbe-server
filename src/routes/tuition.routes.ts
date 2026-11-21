@@ -20,7 +20,24 @@ import {
     verifyAdmin,
 } from "../middlewares/auth.middleware.js";
 
+import multer from "multer";
+import { uploadImage } from "../controllers/upload.controller.js";
+
 const router = Router();
+
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: 5 * 1024 * 1024, // 5 MB
+    },
+    fileFilter: (_req, file, callback) => {
+        if (file.mimetype.startsWith("image/")) {
+            callback(null, true);
+        } else {
+            callback(new Error("Only image files are allowed"));
+        }
+    },
+});
 
 // Public routes
 router.get("/stats", getPublicTuitionStats);
@@ -39,6 +56,14 @@ router.patch(
     verifyToken,
     verifyAdmin,
     moderateTuition
+);
+
+router.post(
+    "/upload-image",
+    verifyToken,
+    verifyTutor,
+    upload.single("image"),
+    uploadImage
 );
 
 // Tutor routes
