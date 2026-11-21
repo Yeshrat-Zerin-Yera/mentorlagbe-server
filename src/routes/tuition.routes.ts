@@ -3,6 +3,7 @@ import { Router } from "express";
 
 import {
     getPublicTuitions,
+    getPublicTuitionStats,
     getPublicTuitionById,
     createTuition,
     getMyTuitions,
@@ -22,6 +23,7 @@ import {
 const router = Router();
 
 // Public routes
+router.get("/stats", getPublicTuitionStats);
 router.get("/", getPublicTuitions);
 
 // Admin routes — keep these before the /:id route.

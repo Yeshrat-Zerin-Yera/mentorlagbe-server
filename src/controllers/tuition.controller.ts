@@ -736,3 +736,40 @@ export const moderateTuition: RequestHandler = async (req, res) => {
         });
     }
 };
+
+
+// GET /api/tuitions/stats
+// Public: statistics for approved and active tuition posts.
+export const getPublicTuitionStats: RequestHandler = async (_req, res) => {
+    try {
+        const filter: Filter<Document> = {
+            approvalStatus: "approved",
+            isActive: true,
+        };
+
+        const tuitions = getTuitionCollection();
+
+        const [totalTuitions, subjects] = await Promise.all([
+            tuitions.countDocuments(filter),
+            tuitions.distinct("subject", filter),
+        ]);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                totalTuitions,
+                totalSubjects: subjects.filter(
+                    (subject) =>
+                        typeof subject === "string" && subject.trim() !== ""
+                ).length,
+            },
+        });
+    } catch (error) {
+        console.error("Get public tuition statistics error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to retrieve tuition statistics",
+        });
+    }
+};
