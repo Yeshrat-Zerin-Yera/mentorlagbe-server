@@ -314,3 +314,68 @@ export const updateUserRole: RequestHandler = async (req, res) => {
         });
     }
 };
+
+// GET /api/users/admin/stats
+// Admin dashboard overview statistics.
+export const getAdminDashboardStats: RequestHandler = async (_req, res) => {
+    try {
+        const db = getDB();
+
+        const users = db.collection("users");
+        const tuitions = db.collection("tuitions");
+        const payments = db.collection("payments");
+
+        const [
+            totalUsers,
+            totalTutors,
+            pendingTuitions,
+            approvedTuitions,
+            totalRevenue,
+        ] = await Promise.all([
+            users.countDocuments({}),
+
+            users.countDocuments({ role: "tutor" }),
+
+            tuitions.countDocuments({
+                approvalStatus: "pending",
+            }),
+
+            tuitions.countDocuments({
+                approvalStatus: "approved",
+            }),
+
+            payments.aggregate([
+                {
+                    $match: {
+                        paymentStatus: "paid",
+                    },
+                },
+                {
+                    $group: {
+                        _id: null,
+                        total: { $sum: "$amount" },
+                    },
+                },
+            ]).toArray(),
+        ]);
+
+        res.status(200).json({
+            success: true,
+            message: "Admin dashboard statistics retrieved successfully",
+            data: {
+                totalUsers,
+                totalTutors,
+                pendingTuitions,
+                approvedTuitions,
+                totalRevenue: totalRevenue[0]?.total || 0,
+            },
+        });
+    } catch (error) {
+        console.error("Admin dashboard stats error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to retrieve admin dashboard statistics",
+        });
+    }
+};

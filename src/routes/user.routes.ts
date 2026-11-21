@@ -4,12 +4,14 @@ import {
     updateMyProfile,
     getAllUsers,
     updateUserRole,
+     getAdminDashboardStats,
 } from "../controllers/user.controller.js";
 
 import {
     verifyToken,
     verifyAdmin,
 } from "../middlewares/auth.middleware.js";
+
 
 const router = Router();
 
@@ -20,5 +22,6 @@ router.patch("/me", verifyToken, updateMyProfile);
 // Admin-only routes
 router.get("/", verifyToken, verifyAdmin, getAllUsers);
 router.patch("/:id/role", verifyToken, verifyAdmin, updateUserRole);
+router.get("/admin/stats", verifyToken, verifyAdmin, getAdminDashboardStats);
 
 export default router;
