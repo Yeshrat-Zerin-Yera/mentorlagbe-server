@@ -243,17 +243,6 @@ export const handleStripeWebhook = async (
             const users = db.collection("users");
 
             // Stripe can retry webhook delivery. Do not record a session twice.
-            const existingPayment = await payments.findOne({
-                stripeSessionId: session.id,
-            });
-
-            if (existingPayment) {
-                res.status(200).json({
-                    received: true,
-                    message: "Payment was already processed",
-                });
-                return;
-            }
 
             const user = await users.findOne({
                 ...getUserFilter(userId),
@@ -263,8 +252,6 @@ export const handleStripeWebhook = async (
 
             if (!user) {
                 console.error("User for successful Stripe session was not found:", session.id);
-
-                // Return an error so Stripe can retry delivery.
                 res.status(500).send("User account not found");
                 return;
             }
@@ -276,20 +263,47 @@ export const handleStripeWebhook = async (
                         ? session.subscription
                         : session.id;
 
-            const paymentRecord = {
-                userEmail,
-                userName: user.name || session.customer_details?.name || "",
-                userRole,
-                planName: "pro",
-                amount: expectedAmount / 100,
-                currency: "usd",
-                transactionId,
+            const existingPayment = await payments.findOne({
                 stripeSessionId: session.id,
-                paymentStatus: "paid",
-                paidAt: new Date(session.created * 1000),
-            };
+            });
 
-            await payments.insertOne(paymentRecord);
+            if (!existingPayment) {
+                const paymentRecord = {
+                    userEmail,
+                    userName: user.name || session.customer_details?.name || "",
+                    userRole,
+                    planName: "pro",
+                    amount: expectedAmount / 100,
+                    currency: "usd",
+                    transactionId,
+                    stripeSessionId: session.id,
+                    paymentStatus: "paid",
+                    paidAt: new Date(session.created * 1000),
+                };
+
+                await payments.insertOne(paymentRecord);
+            }
+
+            // Always ensure the user's plan is activated.
+            const updateResult = await users.updateOne(
+                {
+                    ...getUserFilter(userId),
+                    email: userEmail,
+                    role: userRole,
+                },
+                {
+                    $set: {
+                        plan: "pro",
+                        updatedAt: new Date(),
+                    },
+                }
+            );
+
+            if (updateResult.matchedCount === 0) {
+                throw new Error(`Could not update plan for ${userEmail}`);
+            }
+
+            console.log(`Pro plan activated for ${userEmail}`);
 
             await users.updateOne(
                 {
