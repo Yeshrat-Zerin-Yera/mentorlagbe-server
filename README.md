@@ -3,6 +3,14 @@
 
 MentorLagbe is a full-stack tuition and mentorship platform that connects students with tutors. This repository contains the REST API built with Node.js, Express, TypeScript, and MongoDB.
 
+## Live Website
+
+[https://mentorlagbe-client-jet.vercel.app](https://mentorlagbe-client-jet.vercel.app)
+
+## Server
+
+[https://mentorlagbe-server-87cn.onrender.com](https://mentorlagbe-server-87cn.onrender.com)
+
 ## Features
 
 - Better Auth authentication with JWT authorization.
@@ -43,7 +51,7 @@ MentorLagbe is a full-stack tuition and mentorship platform that connects studen
 Clone the repository:
 
 ```bash
-git clone YOUR_SERVER_REPOSITORY_URL
+git clone https://github.com/Yeshrat-Zerin-Yera/mentorlagbe-server
 ```
 
 Navigate to the project directory:
@@ -68,8 +76,8 @@ MONGODB_URI=your_mongodb_connection_string
 DB_NAME=your_database_name
 
 BETTER_AUTH_SECRET=your_better_auth_secret
-BETTER_AUTH_URL=http://localhost:5000
-CLIENT_URL=http://localhost:3000
+BETTER_AUTH_URL=https://mentorlagbe-server-87cn.onrender.com
+CLIENT_URL=https://mentorlagbe-client-jet.vercel.app
 
 STRIPE_SECRET_KEY=your_stripe_secret_key
 STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
@@ -133,6 +141,7 @@ Successful payments are verified before updating a user's subscription plan and 
 ## Frontend
 
 The frontend is maintained in a separate repository and built with Next.js.
+[https://github.com/Yeshrat-Zerin-Yera/mentorlagbe-client](https://github.com/Yeshrat-Zerin-Yera/mentorlagbe-client)
 
 ## Security
 
