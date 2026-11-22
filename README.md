@@ -149,3 +149,11 @@ The frontend is maintained in a separate repository and built with Next.js.
 - Role-based middleware restricts privileged operations.
 - Payment records are created only after successful payment verification.
 - Environment secrets must remain private.
+
+## Developer
+
+**Yeshrat Zerin Yera**
+
+- GitHub: https://github.com/Yeshrat-Zerin-Yera
+- LinkedIn: https://www.linkedin.com/in/yeshrat-zerin-yera/
+
