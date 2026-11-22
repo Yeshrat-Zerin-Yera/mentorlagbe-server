@@ -11,6 +11,24 @@ MentorLagbe is a full-stack tuition and mentorship platform that connects studen
 
 [https://mentorlagbe-server-87cn.onrender.com](https://mentorlagbe-server-87cn.onrender.com)
 
+## Frontend
+
+The frontend is maintained in a separate repository and built with Next.js.
+[https://github.com/Yeshrat-Zerin-Yera/mentorlagbe-client](https://github.com/Yeshrat-Zerin-Yera/mentorlagbe-client)
+
+## Demo Admin Credentials
+
+Use the following credentials to explore the Admin Dashboard:
+
+- **Email:** admin@mentorlagbe.com
+- **Password:** Admin123!
+
+### Admin Features
+- View platform statistics
+- Manage users and roles
+- Approve or reject tuition posts
+- View payment transactions
+
 ## Features
 
 - Better Auth authentication with JWT authorization.
@@ -137,11 +155,6 @@ The application uses four MongoDB collections:
 - Tutor Pro: $15
 
 Successful payments are verified before updating a user's subscription plan and recording the transaction.
-
-## Frontend
-
-The frontend is maintained in a separate repository and built with Next.js.
-[https://github.com/Yeshrat-Zerin-Yera/mentorlagbe-client](https://github.com/Yeshrat-Zerin-Yera/mentorlagbe-client)
 
 ## Security
 
